@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>CRUD - Eventos</title>
+    <script src="lib/jquery.js"></script>
+    <script>
+        $(function () {
+            var tbEventos;
+            var edicao = false;
+
+            function listarEventos() {
+                tbEventos = JSON.parse(localStorage.getItem('tbEventos'));
+                    if (tbEventos === null) {
+                    tbEventos = [];
+                    $('#lista').hide();
+                }
+                $('#lista table tbody').html('');
+                for (obj in tbEventos) {
+                    let linha = tbEventos[obj];
+
+                    
+                    $('#lista table tbody').append('<tr>');
+                    $('#lista table tbody').append('<td>' + linha.empresa + '</td>');
+                    $('#lista table tbody').append('<td>' + linha.evento + '</td>');
+                    $('#lista table tbody').append('<td>' + linha.data + '</td>');
+                    $('#lista table tbody').append('<td>' + linha.hora + '</td>');
+                    $('#lista table tbody').append('<td>' + linha.valor + '</td>');
+                    $('#lista table tbody').append('<td><button class="editar" alt="' + obj + '">Editar</button> <button class="deletar" alt="' + obj + '">Deletar</button></td>');
+
+                    $('#lista table tbody').append('</tr>');
+                }
+
+                    $('.editar').on('click', function () {
+
+                    let linha = $(this).attr('alt');
+                    let empresa = tbEventos[linha].empresa;
+                    let evento = tbEventos[linha].evento;
+                    let data = tbEventos[linha].data;
+                    let hora = tbEventos[linha].hora;
+                    let valor = tbEventos[linha].valor;
+
+                
+                    $('#empresa').val(empresa);
+                    $('#evento').val(evento);
+                    $('#data').val(data);
+                    $('#hora').val(hora);
+                    $('#valor').val(valor);
+
+                                    edicao = linha;
+                });
+
+                
+                $('.deletar').on('click', function () {
+                    if (confirm('Deseja realmente deletar esse evento?')) {
+                        let linha = $(this).attr('alt');
+
+            
+                        tbEventos.splice(linha, 1);
+
+            
+                        localStorage.setItem('tbEventos', JSON.stringify(tbEventos));
+
+            
+                        alert('Evento excluido com sucesso!!!');
+
+            
+                        listarEventos();
+                    }
+                });
+            };
+
+            listarEventos();
+
+            function cadastrarEventos() {
+            
+                let evento = {
+                    empresa: $('#empresa').val(),
+                    evento: $('#evento').val(),
+                    data: $('#data').val(),
+                    hora: $('#hora').val(),
+                    valor: $('#valor').val()
+                };
+            
+                tbEventos.push(evento);
+
+            
+                localStorage.setItem('tbEventos',
+                    JSON.stringify(tbEventos));
+
+            
+                listarEventos();
+
+            
+                $('#empresa, #evento, #data, #hora, #valor').val('');
+
+            
+                alert('Evento incluido com sucesso!');
+                $('#lista').show();
+            };
+
+            function editarEventos(linha) {
+                let atualizacao = {
+                    empresa: $('#empresa').val(),
+                    evento: $('#evento').val(),
+                    data: $('#data').val(),
+                    hora: $('#hora').val(),
+                    valor: $('#valor').val()
+                };
+            
+                tbEventos[linha] = atualizacao;
+
+            
+                localStorage.setItem('tbEventos',
+                    JSON.stringify(tbEventos));
+
+            
+                alert('Evento atualizado com sucesso!');
+
+            
+                edicao = false;
+
+            
+                listarEventos();
+
+            
+                $('#empresa, #evento, #data, #hora, #valor').val('');
+            };
+
+            
+            $('#formCadastro').submit(function () {
+            
+                event.preventDefault();
+
+            
+                if (edicao === false) {
+                    cadastrarEventos();
+                } else {
+                    editarEventos(edicao);
+                }
+            });
+
+        });
+    </script>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Eventos</h1>
+    <form id="formCadastro" method="POST">
+        Empresa:
+        <br>
+        <select name="select" id="empresa">
+            <option value="Imélio Eventos & Comunicação">Imélio Eventos & Comunicação</option>
+            <option value="Flor de Seda Eventos">Flor de Seda Eventos</option>
+            <option value="Floop Festas">Floop Festas</option>
+            <option value="Tower SP Eventos">Tower SP Eventos</option>
+            <option value="ART TRUSS Locações e Eventos LTDA">ART TRUSS Locações e Eventos LTDA"</option>
+        </select>
+        <br> Evento:
+        <br>
+        <input type="text" required name="evento" id="evento" placeholder="Digite um evento">
+        <br> Data:
+        <br>
+        <input type="date" required name="data" id="data" placeholder="Digite uma data">
+        <br> Hora:
+        <br>
+        <input type="time" name="hora" id="hora" placeholder="Digite uma hora" required>
+        <br> Valor:
+        <br>
+        <input type="number" name="valor" id="valor" placeholder="Digite o valor" required>
+        <br>
+        <br>
+        <input id="salvar" type="submit" value="Salvar">
+    </form>
+    <hr>
+    <div id="lista">
+        <h1>Lista de Eventos</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Evento</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Valor</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
